@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<link rel="stylesheet" href="css/index.css" />
+		<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" src="js/data.js"></script>
+	</head>
+
+	<body>
+		<div class="left-menu">
+			<div class="menu-wrapper">
+				<div class="logo-wrapper">
+					<img src="img/logo.svg" class="logo" />
+					<p class="description">互动设计中心</p>
+				</div>
+				<div class="struct-wrapper">
+					<ul class="struct-tree">
+						<!--<li>
+							<a href="img/test2.jpg" class="selected">首页</a>
+					   </li>
+					   <li>
+							<a>会员中心</a>
+							<ul>
+								<li><a href="img/test1.jpg">会员注册</a></li>
+								<li><a href="img/test3.jpg">会员登录</a></li>
+							</ul>
+					   </li>-->
+					</ul>
+				</div>
+			</div>
+			<div>
+				<i class="micro-icon"></i>
+			</div>
+		</div>
+
+		<div id="UiPage" class="UiPage" <!--style="background-image: url(img/test2.jpg);height: 1921px;" -->>
+
+		</div>
+
+		<div class="LoadingMask"></div>
+	</body>
+
+	<script>
+		$(function() {
+			//初始化页面
+			InitPage();
+
+			//显示或隐藏左边的菜单
+			$(".left-menu").hover(function() {
+				$(this).stop(true).animate({
+					left: 0
+				}, 300);
+			}, function() {
+				var leftPX = parseInt($(this).width()) - 32;
+				$(this).stop(true).animate({
+					left: -leftPX
+				}, 300);
+			})
+            
+            //绑定菜单树节点的点击
+			$(".struct-tree").on("click", "a", function() {
+				var isSelected = $(this).hasClass("selected");
+				var isHaveHref = !!$(this).attr("href");
+				//非当前选中项以及该选中项包含有效href值
+				if (!isSelected && isHaveHref) {
+					//显示自定义遮罩层
+					LoadMask.show();
+					var imgHref = $(this).attr("href");
+					//图片地址有效并加载完毕时执行
+					$("<img/>").attr("src", imgHref).load(function() {
+						var imgWidth = this.width;
+						var imgHeight = this.height;
+						var maxWidth = window.screen.availWidth;
+						//当图片超出了屏幕可用宽度时，按比例缩小图片
+						if (imgWidth > maxWidth) {
+							var scale = maxWidth / imgWidth;
+							imgHeight = imgHeight * scale;
+							imgWidth = maxWidth;
+						}
+						$("#UiPage").css({
+							"background-image": "url(" + imgHref + ")",
+							"height": imgHeight + "px",
+							"background-position": "center 0",
+							"background-size": imgWidth + "px " + imgHeight + "px"
+						});
+						LoadMask.hide();
+					})
+
+					//图片地址无效时执行
+					$("<img/>").attr("src", imgHref).error(function() {
+						$("#UiPage").css({
+							"background-image": "url(img/placeholder.png)",
+							"height": "600px",
+							"background-position": "center center",
+							"background-size": "cover"
+						});
+						LoadMask.hide();
+					})
+
+					//修改默认选中项
+					$(".struct-tree").find("a.selected").removeClass("selected")
+						.end()
+						.find(this).addClass("selected");
+				}
+
+				//禁止默认的跳转
+				return false;
+			})
+		})
+
+		/*
+		 * 初始化页面方法
+		 * 所需的配置数据在data.js
+		 */
+		function InitPage() {
+			//初始化菜单宽度
+			var $menu = $(".left-menu");
+			var menuWidth = parseInt(sourceData.menu_width);
+			menuWidth = (menuWidth && menuWidth >= 170) ? menuWidth : 200;
+			$menu.css({
+				"width": menuWidth + "px",
+				"left": (-menuWidth + 32) + "px"
+			});
+			$menu.find(".menu-wrapper").css("width", (menuWidth - 32) + "px")
+
+			//初始化菜单内容树
+			for (var i = 0; i < sourceData.data.length; i++) {
+				var liData = sourceData.data[i];
+				CreateLi(liData).appendTo($(".struct-tree"))
+			}
+
+			//加载第一个有效的树内容
+			setTimeout(function() {
+				$(".struct-tree a[href]:first").click();
+			}, 50)
+		}
+
+		//创建li标签
+		function CreateLi(liData) {
+			//创建a标签并初始化
+			var $aObj = $("<a></a>").attr("title", liData.text)
+				.text(liData.text);
+			//img有值情况下才添加href属性                      
+			liData.img && $aObj.attr("href", liData.img);
+			//创建li标签并添加a标签
+			var $liObj = $("<li></li>").append($aObj[0]);
+			//存在子内容时
+			if (liData.sub && liData.sub.length > 0) {
+				//先添加一个子ul容器
+				$liObj.append($("<ul></ul>"));
+				//递归添加子内容
+				for (var s = 0; s < liData.sub.length; s++) {
+					var sLiData = liData.sub[s];
+					$liObj.find(">ul").append(CreateLi(sLiData));
+				}
+			} else {
+				//不存在子内容且没有图片时，前景色为灰
+				!liData.img && $aObj.css("color", "gray");
+			}
+
+			return $liObj;
+		}
+
+		//遮罩
+		var LoadMask = {
+			obj: $(".LoadingMask"),
+			show: function() {
+				this.obj.show();
+			},
+			hide: function() {
+				setTimeout(function() {
+					LoadMask.obj.hide();
+				}, 300)
+			}
+		}
+	</script>
+
+</html>

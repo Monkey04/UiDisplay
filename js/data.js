@@ -1,0 +1,35 @@
+//初始化页面所需数据
+var sourceData={
+	menu_width:null,//左边菜单总宽度，最低不能低于170px，默认为200px
+	data:[{
+		text:"首页",
+		img:"img/test4.jpg",
+	},{
+		text:"会员中心",
+		img:"",
+		sub:[{
+			text:"会员注册",
+			img:"img/test2.jpg",
+			sub:[]
+		},{
+			text:"会员登录",
+			img:"img/test1.jpg"
+		},{
+			text:"会员信息",
+			img:"",
+			sub:[{
+				text:"基本信息",
+				img:"none",
+		        sub:[]
+			},{
+				text:"进阶信息",
+				img:"img/test3.jpg",
+		        sub:[]
+			},{
+				text:"高级信息",
+				img:"",
+				sub:[]
+			}]
+		}]
+	}]
+}
