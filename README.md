@@ -42,4 +42,4 @@
 > sourceData.data所有子对象都由text,img,sub参数组成，img和sub非必要，用以构建左侧结构树形式的菜单
 > 效果如下
 
-![](https://raw.githubusercontent.com/Monkey04/UiDisplay/master/img/placeholder.png)
+![效果图](https://raw.githubusercontent.com/Monkey04/UiDisplay/master/img/placeholder.png)
